@@ -25,6 +25,7 @@ class Node
 		void setElement(Element);
 		void setFirstChild(Node*);
 		void setNextSibling(Node*);
+		Node& operator= (const Node &nodo);
 };
 
 /* ---------------------------------------------- */
