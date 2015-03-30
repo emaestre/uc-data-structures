@@ -25,8 +25,6 @@ class Node
 		void setElement(Element);
 		void setFirstChild(Node*);
 		void setNextSibling(Node*);
-		Node& operator= (const Node&);
-		~Node(void);
 };
 
 /* ---------------------------------------------- */
@@ -88,12 +86,6 @@ Node& Node::operator= (const Node &nodo)
 	this->firstChild = nodo.firstChild;
 	this->nextSibling = nodo.nextSibling;	
 	return *this;
-}
- 
-Node::~Node(void)
-{
-	firstChild = NULL;
-	nextSibling = NULL;
 }
 
 #endif
