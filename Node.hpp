@@ -1,7 +1,6 @@
 #ifndef _NODE_H_
 #define _NODE_H_
 
-#include <iostream>
 #include "Element.hpp"
 
 using namespace std;
@@ -11,43 +10,48 @@ class Node
 	private:
 		
 		Element e;
-		Node *firstChild;
-		Node *nextSibling;
+		Node *FirstChild;
+		Node *NextSibling;
 	
 	public:
 		
+		// Constructores
 		Node(void);
 		Node(Element,Node*,Node*);
+		// Constructor copia
 		Node(const Node&);
+		// Metodos observadores
 		Element element(void);
 		Node* firstChild(void);
 		Node* nextSibling(void);
+		// Metodos modificadores
 		void setElement(Element);
 		void setFirstChild(Node*);
 		void setNextSibling(Node*);
-		Node& operator= (const Node &nodo);
+		// Sobrecarga
+		Node& operator= (const Node&);
 };
 
 /* ---------------------------------------------- */
  
 Node::Node(void)
 {
-	firstChild = NULL;
-	nextSibling = NULL;
+	FirstChild = NULL;
+	NextSibling = NULL;
 }
  
 Node::Node(Element aux, Node *hi, Node *hd)
 {
 	e = aux;
-	firstChild = hi;
-	nextSibling = hd;
+	FirstChild = hi;
+	NextSibling = hd;
 }
  
 Node::Node(const Node &a)
 {
 	e = a.e;
-	firstChild = a.firstChild;
-	nextSibling = a.nextSibling;
+	FirstChild = a.FirstChild;
+	NextSibling = a.NextSibling;
 }
  
 Element Node::element(void)
@@ -57,12 +61,12 @@ Element Node::element(void)
 
 Node* Node::firstChild(void)
 {
-	return firstChild;
+	return FirstChild;
 }
  
 Node* Node::nextSibling(void)
 {
-	return nextSibling;
+	return NextSibling;
 }
 
 void Node::setElement(Element aux)
@@ -72,20 +76,20 @@ void Node::setElement(Element aux)
  
 void Node::setFirstChild(Node *hi)
 {
-	firstChild = hi;
+	FirstChild = hi;
 }
 
  
 void Node::setNextSibling(Node *hd)
 {
-	nextSibling = hd;
+	NextSibling = hd;
 }
 
 Node& Node::operator= (const Node &nodo)
 {
 	this->e = nodo.e;
-	this->firstChild = nodo.firstChild;
-	this->nextSibling = nodo.nextSibling;	
+	this->FirstChild = nodo.FirstChild;
+	this->NextSibling = nodo.NextSibling;	
 	return *this;
 }
 
