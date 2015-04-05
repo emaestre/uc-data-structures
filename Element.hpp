@@ -20,11 +20,11 @@ class Element
 		Element(void);
 		Element(string, list<string>, string);
 		Element(const Element&);
-		string tagName(void);
-		list<string> attrList(void);
-		string innerHTML(void);
+		string getTagName(void);
+		list<string> attributeList(void);
+		string getInnerHTML(void);
 		void setTagName(string);
-		void setAttrList(list<string>);
+		void setAttributeList(list<string>);
 		void setInnerHTML(string);
 		Element& operator= (const Element &nodo);
 };
@@ -52,17 +52,17 @@ Element::Element(const Element &e)
 	innerHTML = e.innerHTML;
 }
  
-string Element::tagName(void)
+string Element::getTagName(void)
 {
 	return tagName;
 }
 
-list<string> Element::attrList(void)
+list<string> Element::attributeList(void)
 {
 	return attrList;
 }
  
-string Element::innerHTML(void)
+string Element::getInnerHTML(void)
 {
 	return innerHTML;
 }
@@ -72,7 +72,7 @@ void Element::setTagName(string tag)
 	tagName = tag;
 }
  
-void Element::setAttrList(list<string> l)
+void Element::setAttributeList(list<string> l)
 {
 	attrList = l;
 }
