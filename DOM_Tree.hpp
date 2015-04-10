@@ -1,7 +1,6 @@
 #ifndef _DOM_TREE_H_
 #define _DOM_TREE_H_
 
-#include "Lista.hpp"
 #include "Node.hpp"
 #include <stack>
 
@@ -132,8 +131,6 @@ void DOM_Tree::BuscarID(DOM_Tree &h, string id, Node *p)
 
 void DOM_Tree::ImprimirArbol(Node *document, int esp)
 {
-    Node *aux;
-
     if(document != NULL)
     {
     	if(document->firstChild() != NULL)
@@ -181,7 +178,8 @@ void DOM_Tree::Identar(int cont)
 
 DOM_Tree DOM_Tree::Convertir(string h)
 {
-    int i, j, k;
+    int i, j, k; 
+    unsigned int error = -1;
     Element e;
     DOM_Tree arb, aux;
     string name, inn, tag, atr;
@@ -197,14 +195,14 @@ DOM_Tree DOM_Tree::Convertir(string h)
             if(h[1] != '/')
             {
                 name = h.substr(1, j-1);
-                if(name.find(' ') != -1)
+                if(name.find(' ') != error)
                 {
                     i = name.find(' ');
                     tag = name.substr(0, i);
                     name.erase(0, i+1);
                     while(!name.empty())
                     {
-                        if(name.find(' ') != -1)
+                        if(name.find(' ') != error)
                         {
                             i = name.find(' ');
                             atr = name.substr(0, i);
