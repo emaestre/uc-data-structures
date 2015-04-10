@@ -17,6 +17,7 @@ class Node
 		
 		// Constructores
 		Node(void);
+		Node(Element);
 		Node(Element,Node*,Node*);
 		// Constructor copia
 		Node(const Node&);
@@ -29,7 +30,7 @@ class Node
 		void setFirstChild(Node*);
 		void setNextSibling(Node*);
 		// Sobrecarga
-		Node& operator= (const Node&);
+		void operator= (const Node&);
 };
 
 /* ---------------------------------------------- */
@@ -39,7 +40,12 @@ Node::Node(void)
 	FirstChild = NULL;
 	NextSibling = NULL;
 }
- 
+
+Node::Node(Element aux)
+{
+	e = aux;
+}
+
 Node::Node(Element aux, Node *hi, Node *hd)
 {
 	e = aux;
@@ -85,12 +91,11 @@ void Node::setNextSibling(Node *hd)
 	NextSibling = hd;
 }
 
-Node& Node::operator= (const Node &nodo)
+void Node::operator= (const Node &nodo)
 {
 	this->e = nodo.e;
 	this->FirstChild = nodo.FirstChild;
 	this->NextSibling = nodo.NextSibling;	
-	return *this;
 }
 
 #endif
