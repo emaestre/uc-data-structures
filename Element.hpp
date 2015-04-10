@@ -17,16 +17,21 @@ class Element
 	
 	public:
 		
+		// Constructores
 		Element(void);
 		Element(string, list<string>, string);
+		// Constructor copia
 		Element(const Element&);
+		// Metodos observadores
 		string getTagName(void);
 		list<string> attributeList(void);
 		string getInnerHTML(void);
+		// Metodos modificadores
 		void setTagName(string);
 		void setAttributeList(list<string>);
 		void setInnerHTML(string);
-		Element& operator= (const Element &nodo);
+		// Sobrecarga
+		void operator= (const Element &nodo);
 };
 
 /* --------------------------------------------------------- */
@@ -83,12 +88,11 @@ void Element::setInnerHTML(string inner)
 	innerHTML = inner;
 }
 
-Element& Element::operator= (const Element &e)
+void Element::operator= (const Element &e)
 {
 	this->tagName = e.tagName;
 	this->attrList = e.attrList;
 	this->innerHTML = e.innerHTML;	
-	return *this;
 }
 
 #endif
