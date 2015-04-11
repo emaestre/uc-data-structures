@@ -3,6 +3,7 @@
 
 #include "Node.hpp"
 #include <stack>
+#include <vector>
 
 using namespace std;
 
@@ -17,10 +18,11 @@ class DOM_Tree
 		void Destruir(Node*);
 		Node* Copiar(Node*);
 		void BuscarID(DOM_Tree&, string, Node*);
-        static void ImprimirArbol(Node*, int);
-        static void ImprimirAtributos(list<string>);
-        static void Identar(int);
-        DOM_Tree Convertir(string);
+      	static void ImprimirArbol(Node*, int);
+      	static void ImprimirAtributos(list<string>);
+      	static void Identar(int);
+      	static void ImprimirHastaTag(string&, string&, string, int);
+      	DOM_Tree Convertir(string);
 	
 	public:
 
@@ -44,9 +46,9 @@ class DOM_Tree
 		void replaceChild(int, DOM_Tree);
 		void replaceChild(int, string);
 		// Sobrecarga de operadores
-        void operator= (const DOM_Tree&);
-        friend ostream& operator<< (ostream &o, const DOM_Tree &h);
-        // Destructor
+	   DOM_Tree& operator= (const DOM_Tree&);
+	   friend ostream& operator<< (ostream &o, const DOM_Tree &h);
+	   // Destructor
 		~DOM_Tree(void);
 };
  
@@ -131,27 +133,58 @@ void DOM_Tree::BuscarID(DOM_Tree &h, string id, Node *p)
 
 void DOM_Tree::ImprimirArbol(Node *document, int esp)
 {
+    Node* hermano, *hijo;
+    string tag, inner;
+
     if(document != NULL)
     {
-    	if(document->firstChild() != NULL)
-	    {
-	    	Identar(esp);
-	        cout << "<" << document->element().getTagName();
-	        ImprimirAtributos(document->element().attributeList());
-	        cout << ">" << endl;
-	        ImprimirArbol(document->firstChild(), esp+1);
-	        Identar(esp);
-	        cout << "</" << document->element().getTagName() << ">" << endl;
-	    }
-	    else
-	    {
-	        Identar(esp);
-	        cout << "<" << document->element().getTagName();
-	        ImprimirAtributos(document->element().attributeList());
-	        cout << ">";
-	        cout << document->element().getInnerHTML() << "</" << document->element().getTagName() << ">" << endl;
-		}
-	    ImprimirArbol(document->nextSibling(), esp);
+
+        hermano = NULL;
+        hijo = NULL;
+        inner = document->element().getInnerHTML();
+        hermano=document->firstChild();
+        hijo= document->firstChild();
+
+
+
+            if( document->firstChild() != NULL)
+            {
+                    Identar(esp);
+                    cout << "<" << document->element().getTagName();
+                    ImprimirAtributos(document->element().attributeList());
+                    cout << ">" << endl;
+
+
+                    while(!inner.empty())
+                    {
+                        ImprimirHastaTag(inner, tag, document->element().getTagName(), esp); /***/
+                        cout << endl;
+
+                        if(hijo!=NULL)
+                        {
+                            ImprimirArbol(hijo, esp+1);
+                            hijo=hijo->firstChild();
+                        }
+                        ImprimirHastaTag(inner, tag, document->element().getTagName(), esp); /***/
+                        cout << endl;
+                        if( hermano->nextSibling() != NULL)
+                        {
+                            ImprimirArbol(hermano->nextSibling(), esp+1);
+                            hermano = hermano->nextSibling();
+                        }
+
+                    }
+                    Identar(esp);
+                    cout << "</" << document->element().getTagName() << ">" << endl;
+            }
+            else
+            {
+                    Identar(esp);
+                    cout << "<" << document->element().getTagName();
+                    ImprimirAtributos(document->element().attributeList());
+                    cout << ">";
+                    cout << document->element().getInnerHTML() << "</" << document->element().getTagName() << ">" << endl;
+            }
     }
 
 }
@@ -172,96 +205,114 @@ void DOM_Tree::Identar(int cont)
 
     for(i = 0; i < cont; i++)
     {
-    	cout << "     ";
+        cout << "    ";
+    }
+}
+
+void DOM_Tree::ImprimirHastaTag(string &h, string &tag, string tagdocument, int esp)
+{
+    string tagaux;
+    unsigned int error = -1, i, j;
+
+    i = h.find('<');
+    j = h.find('>');
+    if(i != error and j != error)
+    {
+        Identar(esp+1);
+        cout << h.substr(0, i);
+        tag = h.substr(i+1, j-i-1);
+        h.erase(0, j+1);
+        if( ('/' + tag)!= tagdocument)
+        {
+            tagaux = '/' + tag;
+            i= h.find(tagaux);
+            h.erase(0, i+1+tagaux.length());
+        }
+
+    }
+    else
+    {
+        Identar(esp+1);
+        cout << h;
+        h.erase();
     }
 }
 
 DOM_Tree DOM_Tree::Convertir(string h)
 {
-    int i, j, k; 
-    unsigned int error = -1;
+    unsigned int error = -1, j, k, i;
     Element e;
-    DOM_Tree arb, aux;
-    string name, inn, tag, atr;
+    DOM_Tree aux;
+    string n1, n2, inn, tag, atr;
     list<string> atrb;
-    stack<Element> a, b;
-    stack<string> inners;
+    vector<DOM_Tree> a;
+
 
     while(!h.empty())
     {
-        if(h[0] == '<')
+        atrb = list<string>();
+        k = h.find('<');
+        j = h.find('>');
+        if(k != error and j != error)
         {
-            j = h.find('>');
-            if(h[1] != '/')
+            n1 = h.substr(k+1, j-k-1);
+            if(n1.find(' ') != error)
             {
-                name = h.substr(1, j-1);
-                if(name.find(' ') != error)
+                i = n1.find(' ');
+                tag = n1.substr(0, i);
+                n1.erase(0, i+1);
+                while(!n1.empty())
                 {
-                    i = name.find(' ');
-                    tag = name.substr(0, i);
-                    name.erase(0, i+1);
-                    while(!name.empty())
+                    if(n1.find(' ') != error)
                     {
-                        if(name.find(' ') != error)
-                        {
-                            i = name.find(' ');
-                            atr = name.substr(0, i);
-                            atrb.push_back(atr);
-                            name.erase(0, i+1);
-                        }
-                        else
-                        {
-                            atrb.push_back(name);
-                            name.clear();
-                        }
+                        i = n1.find(' ');
+                        atr = n1.substr(0, i);
+                        atrb.push_back(atr);
+                        n1.erase(0, i+1);
+                    }
+                    else
+                    {
+                        atrb.push_back(n1);
+                        n1.clear();
                     }
                 }
-                else
-                    tag=name;
-                
-                e = Element(tag, atrb, inn);
-                b.push(e);
-                h.erase(0, j+1);
+                n1 = tag;
             }
-            else
-            {
-                e = b.top();
-                b.pop();
-                e.setInnerHTML(inners.top());
-                a.push(e);
-                inners.pop();
-                if(h[j+1] != '<')
-                {
-                    h.erase(0, j+1);
-                    if(!h.empty())
-                    {
-                        k = h.find('<');
-                        inn = inners.top();
-                        inn += h.substr(0, k);
-                        h.erase(0, k);
-                        inners.pop();
-                        inners.push(inn);
-                    }
-                }
-                else
-                    h.erase(0, j+1);
-            }
+            n2 = "</" + n1 + '>';
+            h.erase(0, j+1);
+            k = h.find(n2);
+            inn = h.substr(0, k);
+            h.erase(k, n2.size());
         }
         else
         {
-            k = h.find('<');
-            inn = h.substr(0, k);
-            h.erase(0, k);
-            inners.push(inn);
+            inn = h;
+            h.clear();
         }
+
+        e = Element(n1, atrb, inn);
+        if(!e.attributeList().empty())
+            cout << e.attributeList().front() << endl;
+        
+        aux = DOM_Tree(e);
+        a.insert(a.begin(), aux);
     }
+    a.erase(a.begin());
+
     while(!a.empty())
     {
-        aux = DOM_Tree(a.top());
-        arb.appendChild(aux);
-        a.pop();
+        aux = a[0];
+        a.erase(a.begin()+0);
+        if(!a.empty())
+        {
+            i = 0;
+            while(a[i].document->element().getInnerHTML().find(aux.document->element().getInnerHTML())==error)
+                i++;
+            
+            a[i].appendChild(1, aux);
+        }
     }
-    return (arb);
+    return (aux);
 }
 
 // Metodos publicos
@@ -475,22 +526,24 @@ void DOM_Tree::replaceChild(int pos, string h)
 
 // Sobrecarga de operadores
 
-void DOM_Tree::operator= (const DOM_Tree &h)
+DOM_Tree& DOM_Tree::operator= (const DOM_Tree &h)
 {
 	this->document = Copiar(h.document);
+	return *this;
 }
 
 ostream& operator<< (ostream &o, const DOM_Tree &h)
 {
-    Node *aux;
+	Node *aux;
 
     if(h.document != NULL)
     {
-        o << "<" << h.document->element().getTagName() << ">" << endl;
+  		if(h.document->element().getTagName() == "html");
+        o << "<" << "!document type" << ">" << endl;
         aux = h.document->firstChild();
-		DOM_Tree::ImprimirArbol(aux, 0);
-    }
 
+        DOM_Tree::ImprimirArbol(aux, 0);
+    }
     return o;
 }
 
